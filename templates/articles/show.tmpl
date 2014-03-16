@@ -1,0 +1,20 @@
+{{with .ArticleShow}}
+  <div class="blog-post">
+    <h2 class="blog-post-title"><a href="/articles/{{.SimpleName}}">{{.Title}}</a></h2>
+    <p class="blog-post-meta">{{.FormattedPublishedDate}}</p>
+    {{.ParsedBody}}
+  </div>
+{{end}}
+
+<div class="row">
+  <div class="pull-left">
+  {{with .PreviousArticle}}
+  <a href="/articles/{{.SimpleName}}" class="btn btn-default btn-sm btn-info" role="button"><span class="glyphicon glyphicon-chevron-left"></span>{{.Title}}</a>
+  {{end}}
+  </div>
+  <div class="pull-right">
+  {{with .NextArticle}}
+  <a href="/articles/{{.SimpleName}}" class="btn btn-default btn-sm btn-info" role="button">{{.Title}}<span class="glyphicon glyphicon-chevron-right"></span></a>
+  {{end}}
+  </div>
+</div>

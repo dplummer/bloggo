@@ -8,6 +8,9 @@ import (
 
 type viewContext struct {
   Articles []Article
+  ArticleShow *Article
+  PreviousArticle *Article
+  NextArticle *Article
 }
 
 func getArticles(c redis.Conn) (content []Article, err error) {
@@ -17,6 +20,20 @@ func getArticles(c redis.Conn) (content []Article, err error) {
     content[i].FromJson([]byte(raw))
   }
   return
+}
+
+func (v *viewContext) setArticle(name string) {
+  for i, article := range v.Articles {
+    if article.SimpleName == name {
+      v.ArticleShow = &article
+      if i > 0 {
+        v.PreviousArticle = &v.Articles[i-1]
+      }
+      if i < len(v.Articles) - 1 {
+        v.NextArticle = &v.Articles[i+1]
+      }
+    }
+  }
 }
 
 func main() {
@@ -38,9 +55,21 @@ func main() {
     view.Articles, err = getArticles(c)
 
     if err != nil {
-      r.HTML(200, "error", err)
+      r.HTML(500, "error", err)
     } else {
       r.HTML(200, "home", view)
+    }
+  })
+
+  m.Get("/articles/:name", func(r render.Render, params martini.Params) {
+    var view viewContext
+    view.Articles, err = getArticles(c)
+    view.setArticle(params["name"])
+
+    if err != nil {
+      r.HTML(500, "error", err)
+    } else {
+      r.HTML(200, "articles/show", view)
     }
   })
 
