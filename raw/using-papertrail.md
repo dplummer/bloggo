@@ -15,4 +15,4 @@ For CentOS 5.5:
         $ /sbin/chkconfig syslog off
         $ /sbin/chkconfig --level 2345 rsyslog on
 
-6. If SNMPd logging is too verbose: http://serverfault.com/questions/310640/reduce-snmpd-logging-verbosity
+6. If [SNMPd logging is too verbose](http://serverfault.com/questions/310640/reduce-snmpd-logging-verbosity)
