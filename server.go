@@ -2,7 +2,7 @@ package main
 
 import (
   "github.com/codegangsta/martini"
-  "github.com/martini-contrib/render"
+  "github.com/dplummer/render"
   "github.com/garyburd/redigo/redis"
 )
 
@@ -63,6 +63,7 @@ func main() {
 
   m.Use(render.Renderer(render.Options{
     Layout: "layout",
+    HTMLContentType: "text/html",
   }))
 
   m.Get("/", func(r render.Render) {
@@ -74,8 +75,10 @@ func main() {
   m.Get("/feed.xml", func(r render.Render) {
     view := NewView(c)
 
-    // application/xml
-    r.HTML(200, "feed", view, render.HTMLOptions{Layout:""})
+    r.HTML(200, "feed", view, render.HTMLOptions{
+      Layout: "layouts/feed",
+      HTMLContentType: "application/atom+xml",
+    })
   })
 
   m.Get("/articles/:name", func(r render.Render, params martini.Params) {
