@@ -25,7 +25,7 @@ func getArticles(c redis.Conn) (content []Article, err error) {
 func (v *viewContext) setArticle(name string) {
   for i, article := range v.Articles {
     if article.SimpleName == name {
-      v.ArticleShow = &article
+      v.ArticleShow = &v.Articles[i]
       if i > 0 {
         v.PreviousArticle = &v.Articles[i-1]
       }
