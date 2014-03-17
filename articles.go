@@ -13,11 +13,12 @@ type Article struct {
   PublishedDate time.Time `json:"publishedDate"`
   SimpleName    string    `json:"simpleName"`
   Published     bool      `json:"published"`
-  Body          []byte    `json:"body"`
+  Body          string    `json:"body"`
+  AuthorName    string    `json:"authorName"`
 }
 
 func (article *Article) ParsedBody() template.HTML {
-  output := blackfriday.MarkdownCommon(article.Body)
+  output := blackfriday.MarkdownCommon([]byte(article.Body))
   return template.HTML(output)
 }
 
@@ -25,6 +26,16 @@ func (article *Article) FormattedPublishedDate() string {
   return fmt.Sprintf("%d-%02d-%02d", article.PublishedDate.Year(),
     article.PublishedDate.Month(),
     article.PublishedDate.Day())
+}
+
+func (article *Article) PublishedDateXml() string {
+  return fmt.Sprintf("%d-%02d-%02dT%02d:%02d:%02dZ",
+    article.PublishedDate.Year(),
+    article.PublishedDate.Month(),
+    article.PublishedDate.Day(),
+    article.PublishedDate.Hour(),
+    article.PublishedDate.Minute(),
+    article.PublishedDate.Second())
 }
 
 func (article *Article) ToJson() []byte {

@@ -1,0 +1,26 @@
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>{{.Blog.Title}}</title>
+<subtitle>{{.Blog.Subtitle}}</subtitle>
+<id>{{.Blog.BaseUrl}}</id>
+<link href="{{.Blog.BaseUrl}}"/>
+<link href="{{.Blog.BaseUrl}}/feed.xml" rel="self"/>
+<updated>{{.Blog.LastUpdatedAt}}</updated>
+<author>
+<name>{{.Blog.AuthorName}}</name>
+</author>
+{{range .Articles}}
+<entry>
+<title>{{.Title}}</title>
+<link rel="alternate" href="/articles/{{.SimpleName}}"/>
+<id>{{.SimpleName}}</id>
+<published>{{.PublishedDateXml}}</published>
+<updated>{{.PublishedDateXml}}</updated>
+<author>
+<name>{{.AuthorName}}</name>
+</author>
+<content type="html">
+  {{.ParsedBody}}
+</content>
+</entry>
+{{end}}
+</feed>

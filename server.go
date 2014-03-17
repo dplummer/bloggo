@@ -11,10 +11,11 @@ type viewContext struct {
   ArticleShow *Article
   PreviousArticle *Article
   NextArticle *Article
+  Blog Blog
 }
 
 func getArticles(c redis.Conn) (content []Article, err error) {
-  encoded, err := redis.Strings(c.Do("LRANGE", "bloggo:articles:index", "0", "-1"))
+  encoded, err := redis.Strings(c.Do("LRANGE", "bloggo:articles", "0", "-1"))
   content = make([]Article, len(encoded))
   for i, raw := range encoded {
     content[i].FromJson([]byte(raw))
@@ -36,6 +37,19 @@ func (v *viewContext) setArticle(name string) {
   }
 }
 
+func (v *viewContext) setLastUpdatedAtOnBlog() {
+  if len(v.Articles) > 0 {
+    v.Blog.LastUpdatedAt = v.Articles[0].PublishedDate
+  }
+}
+
+func NewView(c redis.Conn) (view viewContext) {
+  view.Blog = getBlog(c)
+  view.Articles, _ = getArticles(c)
+  view.setLastUpdatedAtOnBlog()
+  return view
+}
+
 func main() {
   m := martini.Classic()
   c, err := redis.Dial("tcp", ":6379")
@@ -46,31 +60,29 @@ func main() {
 
   populate(c)
 
+
   m.Use(render.Renderer(render.Options{
     Layout: "layout",
   }))
 
   m.Get("/", func(r render.Render) {
-    var view viewContext
-    view.Articles, err = getArticles(c)
+    view := NewView(c)
 
-    if err != nil {
-      r.HTML(500, "error", err)
-    } else {
-      r.HTML(200, "home", view)
-    }
+    r.HTML(200, "home", view)
+  })
+
+  m.Get("/feed.xml", func(r render.Render) {
+    view := NewView(c)
+
+    // application/xml
+    r.HTML(200, "feed", view, render.HTMLOptions{Layout:""})
   })
 
   m.Get("/articles/:name", func(r render.Render, params martini.Params) {
-    var view viewContext
-    view.Articles, err = getArticles(c)
+    view := NewView(c)
     view.setArticle(params["name"])
 
-    if err != nil {
-      r.HTML(500, "error", err)
-    } else {
-      r.HTML(200, "articles/show", view)
-    }
+    r.HTML(200, "articles/show", view)
   })
 
   m.Run()

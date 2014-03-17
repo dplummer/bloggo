@@ -8,7 +8,7 @@
     <meta name="author" content="Donald Plummer">
     <link rel="shortcut icon" href="">
 
-    <title>Donald Plummer's Blog</title>
+    <title>{{.Blog.Title}}{{if .ArticleShow}} - {{.ArticleShow.Title}}{{end}}</title>
 
     <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/css/blog.css" rel="stylesheet">
@@ -22,7 +22,6 @@
       <div class="container">
         <nav class="blog-nav">
           <a class="blog-nav-item active" href="/">Home</a>
-          <a class="blog-nav-item" href="/archives">Archives</a>
           <a class="blog-nav-item" href="https://github.com/dplummer">My Github</a>
           <a class="blog-nav-item" href="/feed.xml">Blog RSS</a>
         </nav>
@@ -32,8 +31,8 @@
     <div class="container">
 
       <div class="blog-header">
-        <h1 class="blog-title">Donald's Blog</h1>
-        <p class="lead blog-description">I'm a software developer in Seattle, WA.</p>
+        <h1 class="blog-title">{{.Blog.Title}}</h1>
+        <p class="lead blog-description">{{.Blog.Subtitle}}</p>
       </div>
 
       <div class="row">
@@ -48,12 +47,7 @@
           <div class="sidebar-module sidebar-module-inset about">
             <img src="/assets/img/donald-drinking-beer-thumb.png" alt="Me drinking Elysian Dragonstooth Stout in a glass I etched." class="img-responsive" width="260" height="180">
             <h4>About</h4>
-            <p>
-              I enjoy playing board games, drinking stouts, playing video
-              games, and learning. At least once a week I'll have something
-              cool I want to share with my coworkers, so I figured I should
-              write it up for the world to see. Thus this website.
-            </p>
+            <p>{{.Blog.About}}</p>
           </div>
           <div class="sidebar-module">
             <h4>Archives</h4>
