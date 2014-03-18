@@ -7,15 +7,30 @@ import (
 )
 
 func populate(c redis.Conn) {
-  //set
   c.Do("DEL", "bloggo:articles")
-  articles := make([]Article, 5)
+  articles := make([]Article, 6)
 
-  body, err := ioutil.ReadFile("raw/dhcpcd-timeouts-new-archlinux.md")
+  post_index := 0
+
+  body, err := ioutil.ReadFile("raw/new-blog-in-go.md")
   if err != nil {
     panic(err)
   }
-  articles[0] = Article{
+  articles[post_index] = Article{
+    Title: "New blog in Go",
+    PublishedDate: time.Date(2014, time.March, 18, 6, 0, 0, 0, time.UTC),
+    SimpleName: "new-blog-in-go",
+    Published: true,
+    Body: string(body),
+    AuthorName: "Donald Plummer",
+  }
+  post_index++
+
+  body, err = ioutil.ReadFile("raw/dhcpcd-timeouts-new-archlinux.md")
+  if err != nil {
+    panic(err)
+  }
+  articles[post_index] = Article{
     Title: "DHCPCD timeouts on new archlinux installs",
     PublishedDate: time.Date(2013, time.August, 17, 8, 0, 0, 0, time.UTC),
     SimpleName: "dhcpcd-timeouts-new-archlinux",
@@ -23,12 +38,13 @@ func populate(c redis.Conn) {
     Body: string(body),
     AuthorName: "Donald Plummer",
   }
+  post_index++
 
   body, err = ioutil.ReadFile("raw/zeus-urxvt-broken.md")
   if err != nil {
     panic(err)
   }
-  articles[1] = Article{
+  articles[post_index] = Article{
     Title: "Archlinux Zeus and URXVT broken with latest glibc",
     PublishedDate: time.Date(2013, time.August, 17, 8, 0, 0, 0, time.UTC),
     SimpleName: "zeus-urxvt-broken",
@@ -36,12 +52,13 @@ func populate(c redis.Conn) {
     Body: string(body),
     AuthorName: "Donald Plummer",
   }
+  post_index++
 
   body, err = ioutil.ReadFile("raw/starting-god-with-init.md")
   if err != nil {
     panic(err)
   }
-  articles[2] = Article{
+  articles[post_index] = Article{
     Title: "Starting God with an init script",
     PublishedDate: time.Date(2013, time.August, 17, 8, 0, 0, 0, time.UTC),
     SimpleName: "starting-god-with-init",
@@ -49,12 +66,13 @@ func populate(c redis.Conn) {
     Body: string(body),
     AuthorName: "Donald Plummer",
   }
+  post_index++
 
   body, err = ioutil.ReadFile("raw/using-papertrail.md")
   if err != nil {
     panic(err)
   }
-  articles[3] = Article{
+  articles[post_index] = Article{
     Title: "Using Papertrail",
     PublishedDate: time.Date(2013, time.August, 17, 8, 0, 0, 0, time.UTC),
     SimpleName: "using-papertrail",
@@ -62,12 +80,13 @@ func populate(c redis.Conn) {
     Body: string(body),
     AuthorName: "Donald Plummer",
   }
+  post_index++
 
   body, err = ioutil.ReadFile("raw/segfaults-ree-archlinux.md")
   if err != nil {
     panic(err)
   }
-  articles[4] = Article{
+  articles[post_index] = Article{
     Title: "Segfaults with REE on ArchLinux",
     PublishedDate: time.Date(2012, time.June, 15, 8, 0, 0, 0, time.UTC),
     SimpleName: "segfaults-ree-archlinux",
@@ -75,6 +94,7 @@ func populate(c redis.Conn) {
     Body: string(body),
     AuthorName: "Donald Plummer",
   }
+  post_index++
 
   for _, article := range articles {
     c.Do("RPUSH", "bloggo:articles", article.ToJson())

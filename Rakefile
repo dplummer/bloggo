@@ -1,6 +1,7 @@
 timestamp = Time.now.to_i
 
-task :deploy => [:build, :upload_binary, :upload_assets, :symlink_binary, :start_app]
+task :deploy => [:build, :upload_binary, :upload_assets, :symlink_binary,
+                 :start_app]
 task :deploy_assets => [:upload_assets, :start_app]
 
 task :build do
