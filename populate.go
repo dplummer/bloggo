@@ -8,11 +8,25 @@ import (
 
 func populate(c redis.Conn) {
   c.Do("DEL", "bloggo:articles")
-  articles := make([]Article, 6)
+  articles := make([]Article, 7)
 
   post_index := 0
 
-  body, err := ioutil.ReadFile("raw/new-blog-in-go.md")
+  body, err := ioutil.ReadFile("raw/markdown-in-go-templates.md")
+  if err != nil {
+    panic(err)
+  }
+  articles[post_index] = Article{
+    Title: "Markdown in Go templates",
+    PublishedDate: time.Date(2014, time.March, 19, 17, 0, 0, 0, time.UTC),
+    SimpleName: "markdown-in-go-templates",
+    Published: true,
+    Body: string(body),
+    AuthorName: "Donald Plummer",
+  }
+  post_index++
+
+  body, err = ioutil.ReadFile("raw/new-blog-in-go.md")
   if err != nil {
     panic(err)
   }
