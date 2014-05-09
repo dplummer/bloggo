@@ -51,28 +51,38 @@ func NewView(c redis.Conn) (view viewContext) {
 }
 
 func main() {
+  redisPool := redis.NewPool(func() (redis.Conn, error) {
+    c, err := redis.Dial("tcp", ":6379")
+ 
+    if err != nil {
+      return nil, err
+    }
+ 
+    return c, err
+  }, 10)
+ 
+  defer redisPool.Close()
+
   m := martini.Classic()
-  c, err := redis.Dial("tcp", ":6379")
-  if err != nil {
-    panic(err)
-  }
-  defer c.Close()
 
-  populate(c)
-
+  m.Map(redisPool)
 
   m.Use(render.Renderer(render.Options{
     Layout: "layout",
     HTMLContentType: "text/html",
   }))
 
-  m.Get("/", func(r render.Render) {
+  m.Get("/", func(r render.Render, pool *redis.Pool) {
+    c := pool.Get()
+    defer c.Close()
     view := NewView(c)
 
     r.HTML(200, "home", view)
   })
 
-  m.Get("/feed.xml", func(r render.Render) {
+  m.Get("/feed.xml", func(r render.Render, pool *redis.Pool) {
+    c := pool.Get()
+    defer c.Close()
     view := NewView(c)
 
     r.HTML(200, "feed", view, render.HTMLOptions{
@@ -81,7 +91,9 @@ func main() {
     })
   })
 
-  m.Get("/articles/:name", func(r render.Render, params martini.Params) {
+  m.Get("/articles/:name", func(r render.Render, params martini.Params, pool *redis.Pool) {
+    c := pool.Get()
+    defer c.Close()
     view := NewView(c)
     view.setArticle(params["name"])
 
